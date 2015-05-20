@@ -6,4 +6,6 @@
     <string name="bt_not_available">블루투스를 사용할 수 없습니다.</string>
     <string name="bt_not_enabled">블루투스가 꺼져 있습니다.</string>
     <string name="bt_not_enabled_leaving">블루투스가 꺼져 있습니다. 앱을 종료합니다.</string>
+    <string name="set_height">높이 설정</string>
+    <string name="not_connected">책상과 연결되지 않았습니다.</string>
 </resources>

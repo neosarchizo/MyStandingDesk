@@ -48,6 +48,13 @@ public class BTService {
     }
 
     /**
+     * Return the current connection state.
+     */
+    public synchronized int getState() {
+        return mState;
+    }
+
+    /**
      * Start the chat service. Specifically start AcceptThread to begin a
      * session in listening (server) mode. Called by the Activity onResume()
      */
@@ -73,9 +80,8 @@ public class BTService {
      * Start the ConnectThread to initiate a connection to a remote device.
      *
      * @param device The BluetoothDevice to connect
-     * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
-    public synchronized void connect(BluetoothDevice device, boolean secure) {
+    public synchronized void connect(BluetoothDevice device) {
         Log.d(TAG, "connect to: " + device);
 
         // Cancel any thread attempting to make a connection
@@ -103,10 +109,8 @@ public class BTService {
      * Start the ConnectedThread to begin managing a Bluetooth connection
      *
      * @param socket The BluetoothSocket on which the connection was made
-     * @param device The BluetoothDevice that has been connected
      */
-    public synchronized void connected(BluetoothSocket socket, BluetoothDevice
-            device) {
+    public synchronized void connected(BluetoothSocket socket) {
         Log.d(TAG, "connected");
 
                 // Cancel the thread that completed the connection
@@ -195,10 +199,8 @@ public class BTService {
      */
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
-        private final BluetoothDevice mmDevice;
 
         public ConnectThread(BluetoothDevice device) {
-            mmDevice = device;
             BluetoothSocket tmp = null;
 
             // Get a BluetoothSocket for a connection with the
@@ -243,7 +245,7 @@ public class BTService {
             }
 
             // Start the connected thread
-            connected(mmSocket, mmDevice);
+            connected(mmSocket);
         }
 
         public void cancel() {
