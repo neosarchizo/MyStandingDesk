@@ -171,7 +171,12 @@ public class MainActivity extends Activity {
                 Log.w(TAG, getString(R.string.connection_fail));
                 break;
             case CONNECTION_LOST:
-                Toast.makeText(this,R.string.connection_lost,Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, R.string.connection_lost, Toast.LENGTH_SHORT).show();
+                    }
+                });
                 break;
             case DATA_READ:
                 String readData = new String(btServiceEvent.getBuffer(), 0, btServiceEvent.getBufferSize());
