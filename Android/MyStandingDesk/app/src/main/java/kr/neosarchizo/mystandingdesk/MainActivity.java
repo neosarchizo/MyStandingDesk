@@ -48,12 +48,12 @@ public class MainActivity extends Activity {
 
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        btnUp.setImageResource(R.drawable.up_button_pressed);
                         sendCommand("d");
+                        view.setPressed(true);
                         break;
                     case MotionEvent.ACTION_UP:
-                        btnUp.setImageResource(R.drawable.up_button);
                         sendCommand("s");
+                        view.setPressed(false);
                         break;
                 }
                 return true;
@@ -66,12 +66,12 @@ public class MainActivity extends Activity {
 
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        btnDown.setImageResource(R.drawable.down_button_pressed);
                         sendCommand("a");
+                        view.setPressed(true);
                         break;
                     case MotionEvent.ACTION_UP:
-                        btnDown.setImageResource(R.drawable.down_button);
                         sendCommand("s");
+                        view.setPressed(false);
                         break;
                 }
                 return true;
