@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import butterknife.ButterKnife;
@@ -29,10 +30,10 @@ public class MainActivity extends Activity {
     private EventBus mEventBus = EventBus.getDefault();
 
     @InjectView(R.id.btnUp)
-    View btnUp;
+    ImageButton btnUp;
 
     @InjectView(R.id.btnDown)
-    View btnDown;
+    ImageButton btnDown;
 
 
     @Override
@@ -47,9 +48,11 @@ public class MainActivity extends Activity {
 
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        btnUp.setImageResource(R.drawable.up_button_pressed);
                         sendCommand("d");
                         break;
                     case MotionEvent.ACTION_UP:
+                        btnUp.setImageResource(R.drawable.up_button);
                         sendCommand("s");
                         break;
                 }
@@ -63,9 +66,11 @@ public class MainActivity extends Activity {
 
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        btnDown.setImageResource(R.drawable.down_button_pressed);
                         sendCommand("a");
                         break;
                     case MotionEvent.ACTION_UP:
+                        btnDown.setImageResource(R.drawable.down_button);
                         sendCommand("s");
                         break;
                 }
@@ -155,10 +160,18 @@ public class MainActivity extends Activity {
             case CONNECTING:
                 break;
             case CONNECTED:
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, R.string.desk_connected, Toast.LENGTH_SHORT).show();
+                    }
+                });
                 break;
             case CONNECTION_FAIL:
+                Log.w(TAG, getString(R.string.connection_fail));
                 break;
             case CONNECTION_LOST:
+                Toast.makeText(this,R.string.connection_lost,Toast.LENGTH_SHORT).show();
                 break;
             case DATA_READ:
                 String readData = new String(btServiceEvent.getBuffer(), 0, btServiceEvent.getBufferSize());

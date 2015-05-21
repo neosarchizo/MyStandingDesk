@@ -5,21 +5,25 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <View
+    <ImageButton
         android:id="@+id/btnUp"
         android:layout_width="fill_parent"
         android:layout_height="0px"
-        android:background="@drawable/up_button"
-        android:layout_weight="1"/>
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:background="#4c4c4c"/>
-    <View
+        android:layout_margin="30dip"
+        android:layout_weight="1"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
+        android:src="@drawable/up_button"
+        />
+
+    <ImageButton
         android:id="@+id/btnDown"
-        android:background="@drawable/down_button"
         android:layout_width="fill_parent"
         android:layout_height="0px"
-        android:layout_weight="1"/>
+        android:layout_margin="30dip"
+        android:layout_weight="1"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
+        android:src="@drawable/down_button" />
 
 </LinearLayout>

@@ -6,4 +6,7 @@
     <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving MyStandingDesk.</string>
     <string name="set_height">Set height</string>
     <string name="not_connected">You are not connected to a desk</string>
+    <string name="desk_connected">Your desk is connected!</string>
+    <string name="connection_fail">Connection is failed!</string>
+    <string name="connection_lost">Connection is lost!</string>
 </resources>
