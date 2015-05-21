@@ -1,19 +1,19 @@
 #include <SoftwareSerial.h>
- 
+
 #define FALL 8
 #define RISE 9
 #define TRIG 10
 #define ECHO 11
- 
+
 /*
 [State]
 READY : 0
 FALLING : 1
 RISING : 2
 */
- 
+
 int state = 0;
- 
+
 void setup() {
   pinMode(FALL, OUTPUT);
   pinMode(RISE, OUTPUT);
@@ -23,10 +23,10 @@ void setup() {
   digitalWrite(FALL, HIGH);
   digitalWrite(RISE, HIGH);
 }
- 
+
 void loop() {
   long distance = 0;
- 
+
   if (Serial.available()) {
     char c = Serial.read();
     switch (c) {
@@ -51,17 +51,19 @@ void loop() {
         digitalWrite(TRIG, HIGH);
         delayMicroseconds(10);
         digitalWrite(TRIG, LOW);
- 
+
         distance = pulseIn(ECHO, HIGH, 11000);
- 
+
         if (distance == 0) {
           return;
         }
- 
+
         distance = distance / 58.2;
+        Serial.print('f');
         Serial.println(distance);
         break;
       case 'g':
+        Serial.print('g');
         Serial.println(state);
         break;
     }
