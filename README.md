@@ -11,9 +11,9 @@ Android and Arduino applications for my standing desk.
 
 #### 1. Schematic
 
-<img src="./img/MyStandingDesk-Arduino 00.png" ></img>
+<img src="./img/MyStandingDesk-Arduino 00.jpg" ></img>
 
-<img src="./img/MyStandingDesk-Arduino 01.png" ></img>
+<img src="./img/MyStandingDesk-Arduino 01.jpg" ></img>
 
 #### 2. Sketch
 
