@@ -7,11 +7,12 @@ public class BTServiceEvent {
 
     public enum Event {
         NONE,
-        DATA_READ,
         CONNECTED,
         CONNECTING,
         CONNECTION_FAIL,
-        CONNECTION_LOST
+        CONNECTION_LOST,
+        DISTANCE,
+        STATE
     }
 
     public enum State {
@@ -22,17 +23,15 @@ public class BTServiceEvent {
 
     private Event mEvent;
     private State mState;
-    private byte[] mBuffer;
-    private int mBufferSize;
+    private int mValue;
 
     public BTServiceEvent(Event event) {
         mEvent = event;
     }
 
-    public BTServiceEvent(Event event,  byte[] buffer, int bufferSize) {
+    public BTServiceEvent(Event event, int value) {
         mEvent = event;
-        mBuffer = buffer;
-        mBufferSize = bufferSize;
+        mValue = value;
     }
 
     public Event getEvent() {
@@ -43,11 +42,7 @@ public class BTServiceEvent {
         return mState;
     }
 
-    public byte[] getBuffer() {
-        return mBuffer;
-    }
-
-    public int getBufferSize() {
-        return mBufferSize;
+    public int getValue() {
+        return mValue;
     }
 }

@@ -38,6 +38,9 @@ public class BTService {
     public static final int STATE_CONNECTING = 1; // now initiating an outgoing connection
     public static final int STATE_CONNECTED = 2;  // now connected to a remote device
 
+    private static final char CHAR_DISTANCE = 'f';
+    private static final char CHAR_STATE = 'g';
+
     /**
      * Constructor. Prepares a new BluetoothChat session.
      *
@@ -113,7 +116,7 @@ public class BTService {
     public synchronized void connected(BluetoothSocket socket) {
         Log.d(TAG, "connected");
 
-                // Cancel the thread that completed the connection
+        // Cancel the thread that completed the connection
         if (mConnectThread != null) {
             mConnectThread.cancel();
             mConnectThread = null;
@@ -266,6 +269,8 @@ public class BTService {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
+        private String mStrBuffer = "";
+
 
         public ConnectedThread(BluetoothSocket socket) {
             Log.d(TAG, "create ConnectedThread");
@@ -295,9 +300,54 @@ public class BTService {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
+                    mStrBuffer += new String(buffer, 0, bytes);
 
-                    mEventBus.post(new BTServiceEvent(BTServiceEvent.Event.DATA_READ, buffer, bytes));
+                    // Arduino send android a date like "f##/r/n".
 
+                    while (mStrBuffer.length() > 0) {
+                        if (mStrBuffer.charAt(0) == CHAR_DISTANCE || mStrBuffer.charAt(0) == CHAR_STATE) {
+                            int newLine = mStrBuffer.indexOf('\n');
+
+                            if (newLine < 0)
+                                break;
+
+                            String temp = mStrBuffer.substring(0, newLine-1);
+
+                            mStrBuffer = mStrBuffer.substring(newLine + 1);
+
+                            char c = temp.charAt(0);
+                            int val = -1;
+
+                            try {
+                                val = Integer.parseInt(temp.substring(1));
+                            } catch (NumberFormatException numberFormatException) {
+                                numberFormatException.printStackTrace();
+                            }
+
+                            if (val == -1)
+                                continue;
+
+                            if (temp.charAt(0) == CHAR_DISTANCE)
+                                mEventBus.post(new BTServiceEvent(BTServiceEvent.Event.DISTANCE, val));
+                            else
+                                mEventBus.post(new BTServiceEvent(BTServiceEvent.Event.STATE, val));
+
+                        } else {
+                            int idxDistance = mStrBuffer.indexOf(CHAR_DISTANCE);
+                            int idxState = mStrBuffer.indexOf(CHAR_STATE);
+
+                            if (idxDistance < 0 && idxState < 0) {
+                                mStrBuffer = "";
+                                break;
+                            }else if(idxDistance < 0){
+                                mStrBuffer = mStrBuffer.substring(idxState);
+                            }else if(idxState < 0){
+                                mStrBuffer = mStrBuffer.substring(idxDistance);
+                            }else{
+                                mStrBuffer = mStrBuffer.substring(idxDistance < idxState ? idxDistance : idxState);
+                            }
+                        }
+                    }
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     connectionLost();

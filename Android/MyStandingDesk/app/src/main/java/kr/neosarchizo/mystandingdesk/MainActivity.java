@@ -100,7 +100,7 @@ public class MainActivity extends Activity {
         if (command.length() > 0) {
             // Get the message bytes and tell the BluetoothChatService to write
             byte[] send = command.getBytes();
-            mBTService.write(send);;
+            mBTService.write(send);
         }
     }
 
@@ -164,6 +164,8 @@ public class MainActivity extends Activity {
                     @Override
                     public void run() {
                         Toast.makeText(MainActivity.this, R.string.desk_connected, Toast.LENGTH_SHORT).show();
+                        sendCommand("f");
+                        sendCommand("g");
                     }
                 });
                 break;
@@ -178,10 +180,12 @@ public class MainActivity extends Activity {
                     }
                 });
                 break;
-            case DATA_READ:
-                String readData = new String(btServiceEvent.getBuffer(), 0, btServiceEvent.getBufferSize());
+            case DISTANCE:
+                Log.d(TAG,"DISTANCE : "+ btServiceEvent.getValue());
                 break;
-
+            case STATE:
+                Log.d(TAG,"STATE : "+ btServiceEvent.getValue());
+                break;
         }
     }
 
