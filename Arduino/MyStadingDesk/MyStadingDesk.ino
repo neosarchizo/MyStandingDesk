@@ -25,7 +25,7 @@ void setup() {
 }
 
 void loop() {
-  long distance = 0;
+  unsigned long distance = 0;
 
   if (Serial.available()) {
     char c = Serial.read();
@@ -54,11 +54,9 @@ void loop() {
 
         distance = pulseIn(ECHO, HIGH, 11000);
 
-        if (distance == 0) {
-          return;
-        }
+        if (distance != 0)
+          distance = distance / 58.2;
 
-        distance = distance / 58.2;
         Serial.print('f');
         Serial.println(distance);
         break;
