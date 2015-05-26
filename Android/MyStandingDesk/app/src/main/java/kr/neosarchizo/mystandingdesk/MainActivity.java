@@ -1,8 +1,10 @@
 package kr.neosarchizo.mystandingdesk;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +13,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import butterknife.ButterKnife;
@@ -24,16 +28,19 @@ public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
 
     private static final int REQUEST_ENABLE_BT = 1;
+    private static final int MIN_HEIGHT = 70;
+
     private BluetoothAdapter mBluetoothAdapter = null;
     private BTService mBTService = null;
     private EventBus mEventBus = EventBus.getDefault();
     private boolean mMoving = false;
     private MoveThread mMoveThread = null;
+    private int mCurrentHeight = MIN_HEIGHT;
 
-    @InjectView(R.id.btnUp)
+    @InjectView(R.id.btn_up)
     ImageButton btnUp;
 
-    @InjectView(R.id.btnDown)
+    @InjectView(R.id.btn_down)
     ImageButton btnDown;
 
 
@@ -54,7 +61,7 @@ public class MainActivity extends Activity {
                             Toast.makeText(MainActivity.this, R.string.not_connected, Toast.LENGTH_SHORT).show();
                         }
 
-                        mMoveThread = new MoveThread(mBTService,"d");
+                        mMoveThread = new MoveThread(mBTService, "d");
                         mMoveThread.start();
                         view.setPressed(true);
                         break;
@@ -63,6 +70,7 @@ public class MainActivity extends Activity {
                         mMoveThread = null;
 
                         sendCommand("s");
+                        sendCommand("f");
                         view.setPressed(false);
                         break;
                 }
@@ -80,7 +88,7 @@ public class MainActivity extends Activity {
                             Toast.makeText(MainActivity.this, R.string.not_connected, Toast.LENGTH_SHORT).show();
                         }
 
-                        mMoveThread = new MoveThread(mBTService,"a");
+                        mMoveThread = new MoveThread(mBTService, "a");
                         mMoveThread.start();
                         view.setPressed(true);
                         break;
@@ -89,6 +97,7 @@ public class MainActivity extends Activity {
                         mMoveThread = null;
 
                         sendCommand("s");
+                        sendCommand("f");
                         view.setPressed(false);
                         break;
                 }
@@ -107,8 +116,6 @@ public class MainActivity extends Activity {
 
         mEventBus.register(this);
     }
-
-    private void scheduleMoveThread(){}
 
     private boolean sendCommand(String command) {
 
@@ -171,7 +178,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(mMoveThread != null){
+        if (mMoveThread != null) {
             mMoveThread.cancel();
             mMoveThread = null;
         }
@@ -187,7 +194,7 @@ public class MainActivity extends Activity {
         mBTService = new BTService(this);
     }
 
-    public void onEvent(BTServiceEvent btServiceEvent) {
+    public void onEvent(final BTServiceEvent btServiceEvent) {
         switch (btServiceEvent.getEvent()) {
             case NONE:
                 break;
@@ -216,6 +223,15 @@ public class MainActivity extends Activity {
                 break;
             case DISTANCE:
                 Log.d(TAG, "DISTANCE : " + btServiceEvent.getValue());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCurrentHeight = btServiceEvent.getValue();
+
+                        if(mCurrentHeight < MIN_HEIGHT)
+                            mCurrentHeight = MIN_HEIGHT;
+                    }
+                });
                 break;
             case STATE:
                 Log.d(TAG, "STATE : " + btServiceEvent.getValue());
@@ -234,7 +250,37 @@ public class MainActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.set_height: {
-                // TODO set height of Desk
+                AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                dialog.setTitle(R.string.set_height);
+
+                View dialogView = (View) View.inflate(MainActivity.this, R.layout.dialog_set_height, null);
+                final SeekBar seekBar = ButterKnife.findById(dialogView, R.id.goal_height);
+                final TextView textView = ButterKnife.findById(dialogView, R.id.current_height);
+                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        textView.setText(String.valueOf(progress + MIN_HEIGHT));
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                });
+                seekBar.setProgress(mCurrentHeight-MIN_HEIGHT);
+                dialog.setView(dialogView);
+                dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        sendCommand("h"+String.valueOf(seekBar.getProgress()+MIN_HEIGHT));
+                    }
+                });
+                dialog.show();
                 return true;
             }
         }

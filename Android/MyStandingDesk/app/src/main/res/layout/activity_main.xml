@@ -6,7 +6,7 @@
     tools:context=".MainActivity">
 
     <ImageButton
-        android:id="@+id/btnUp"
+        android:id="@+id/btn_up"
         android:layout_width="fill_parent"
         android:layout_height="0px"
         android:layout_margin="30dip"
@@ -17,7 +17,7 @@
         />
 
     <ImageButton
-        android:id="@+id/btnDown"
+        android:id="@+id/btn_down"
         android:layout_width="fill_parent"
         android:layout_height="0px"
         android:layout_margin="30dip"

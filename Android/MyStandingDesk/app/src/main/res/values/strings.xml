@@ -9,4 +9,5 @@
     <string name="desk_connected">Your desk is connected!</string>
     <string name="connection_fail">Connection is failed!</string>
     <string name="connection_lost">Connection is lost!</string>
+    <string name="ok">OK</string>
 </resources>

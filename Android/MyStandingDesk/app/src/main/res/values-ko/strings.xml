@@ -9,4 +9,5 @@
     <string name="desk_connected">책상이 연결되었습니다.</string>
     <string name="connection_fail">연결을 실패했습니다.</string>
     <string name="connection_lost">연결이 끊겼습니다.</string>
+    <string name="ok">확인</string>
 </resources>
