@@ -20,6 +20,8 @@ public class BTService {
     // Debugging
     private static final String TAG = "BTService";
 
+
+
     // Unique UUID for this application
     private static final UUID uuid =
             UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");

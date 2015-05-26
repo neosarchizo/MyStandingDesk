@@ -26,8 +26,9 @@ public class MainActivity extends Activity {
     private static final int REQUEST_ENABLE_BT = 1;
     private BluetoothAdapter mBluetoothAdapter = null;
     private BTService mBTService = null;
-
     private EventBus mEventBus = EventBus.getDefault();
+    private boolean mMoving = false;
+    private MoveThread mMoveThread = null;
 
     @InjectView(R.id.btnUp)
     ImageButton btnUp;
@@ -42,16 +43,25 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
+
         btnUp.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
 
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        sendCommand("d");
+                        if (!sendCommand("d")) {
+                            Toast.makeText(MainActivity.this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+                        }
+
+                        mMoveThread = new MoveThread(mBTService,"d");
+                        mMoveThread.start();
                         view.setPressed(true);
                         break;
                     case MotionEvent.ACTION_UP:
+                        mMoveThread.cancel();
+                        mMoveThread = null;
+
                         sendCommand("s");
                         view.setPressed(false);
                         break;
@@ -66,10 +76,18 @@ public class MainActivity extends Activity {
 
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        sendCommand("a");
+                        if (!sendCommand("a")) {
+                            Toast.makeText(MainActivity.this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+                        }
+
+                        mMoveThread = new MoveThread(mBTService,"a");
+                        mMoveThread.start();
                         view.setPressed(true);
                         break;
                     case MotionEvent.ACTION_UP:
+                        mMoveThread.cancel();
+                        mMoveThread = null;
+
                         sendCommand("s");
                         view.setPressed(false);
                         break;
@@ -90,11 +108,15 @@ public class MainActivity extends Activity {
         mEventBus.register(this);
     }
 
-    private void sendCommand(String command){
-        if (mBTService.getState() != mBTService.STATE_CONNECTED) {
-            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void scheduleMoveThread(){}
+
+    private boolean sendCommand(String command) {
+
+        if (mBTService == null)
+            return false;
+
+        if (mBTService.getState() != BTService.STATE_CONNECTED)
+            return false;
 
         // Check that there's actually something to send
         if (command.length() > 0) {
@@ -102,7 +124,10 @@ public class MainActivity extends Activity {
             byte[] send = command.getBytes();
             mBTService.write(send);
         }
+
+        return true;
     }
+
 
     @Override
     protected void onStart() {
@@ -135,11 +160,20 @@ public class MainActivity extends Activity {
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
         if (mBTService != null) {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mBTService.getState() == mBTService.STATE_NONE) {
+            if (mBTService.getState() == BTService.STATE_NONE) {
                 // Start the Bluetooth chat services
-                BluetoothDevice bluetoothDevice =  mBluetoothAdapter.getRemoteDevice("20:14:08:28:09:01");
+                BluetoothDevice bluetoothDevice = mBluetoothAdapter.getRemoteDevice("20:14:08:28:09:01");
                 mBTService.connect(bluetoothDevice);
             }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mMoveThread != null){
+            mMoveThread.cancel();
+            mMoveThread = null;
         }
     }
 
@@ -181,10 +215,10 @@ public class MainActivity extends Activity {
                 });
                 break;
             case DISTANCE:
-                Log.d(TAG,"DISTANCE : "+ btServiceEvent.getValue());
+                Log.d(TAG, "DISTANCE : " + btServiceEvent.getValue());
                 break;
             case STATE:
-                Log.d(TAG,"STATE : "+ btServiceEvent.getValue());
+                Log.d(TAG, "STATE : " + btServiceEvent.getValue());
                 break;
         }
     }
