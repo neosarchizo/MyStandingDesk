@@ -223,15 +223,7 @@ public class MainActivity extends Activity {
                 break;
             case DISTANCE:
                 Log.d(TAG, "DISTANCE : " + btServiceEvent.getValue());
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCurrentHeight = btServiceEvent.getValue();
-
-                        if(mCurrentHeight < MIN_HEIGHT)
-                            mCurrentHeight = MIN_HEIGHT;
-                    }
-                });
+                mCurrentHeight = btServiceEvent.getValue();
                 break;
             case STATE:
                 Log.d(TAG, "STATE : " + btServiceEvent.getValue());
@@ -272,7 +264,12 @@ public class MainActivity extends Activity {
 
                     }
                 });
-                seekBar.setProgress(mCurrentHeight-MIN_HEIGHT);
+                int currentHeight = mCurrentHeight-MIN_HEIGHT;
+                if(currentHeight < 0)
+                    currentHeight = 0;
+
+                textView.setText(String.valueOf(currentHeight+MIN_HEIGHT));
+                seekBar.setProgress(currentHeight);
                 dialog.setView(dialogView);
                 dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
