@@ -14,6 +14,8 @@ RISING : 2
 
 int state = 0;
 
+unsigned long latestCommandTime = 0;
+
 void setup() {
   pinMode(FALL, OUTPUT);
   pinMode(RISE, OUTPUT);
@@ -31,19 +33,13 @@ void loop() {
     char c = Serial.read();
     switch (c) {
       case 'a':
-        digitalWrite(RISE, HIGH);
-        digitalWrite(FALL, LOW);
-        state = 1;
+        fall();
         break;
       case 's':
-        digitalWrite(RISE, HIGH);
-        digitalWrite(FALL, HIGH);
-        state = 0;
+        stop();
         break;
       case 'd':
-        digitalWrite(RISE, LOW);
-        digitalWrite(FALL, HIGH);
-        state = 2;
+        rise();
         break;
       case 'f':
         digitalWrite(TRIG, LOW);
@@ -66,4 +62,32 @@ void loop() {
         break;
     }
   }
+
+  //if state is rising or falling check latestCommandTime
+  if (state == 1 || state == 2) {
+    // if pass 1 sec from when last command is received then call stop
+    if (millis() - latestCommandTime > 1000) {
+      stop();
+    }
+  }
+}
+
+void stop() {
+  digitalWrite(RISE, HIGH);
+  digitalWrite(FALL, HIGH);
+  state = 0;
+}
+
+void fall() {
+  digitalWrite(RISE, HIGH);
+  digitalWrite(FALL, LOW);
+  state = 1;
+  latestCommandTime = millis();
+}
+
+void rise() {
+  digitalWrite(RISE, LOW);
+  digitalWrite(FALL, HIGH);
+  state = 2;
+  latestCommandTime = millis();
 }
