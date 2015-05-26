@@ -78,12 +78,16 @@ void loop() {
 
     distance = -1;
 
-    while (distance == -1) 
+    while (distance == -1)
       distance = getDistance();
+
+    Serial.print('f');
+    Serial.println(distance);
 
     if (state == 3) {
       if (goalHeight >= distance)
         stop();
+
     } else {
       if (goalHeight <= distance)
         stop();
@@ -141,7 +145,7 @@ void autoMoving() {
 
   int distance = -1;
 
-  while (distance == -1) 
+  while (distance == -1)
     distance = getDistance();
 
   if (goalHeight > distance) {
