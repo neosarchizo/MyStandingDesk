@@ -181,7 +181,7 @@ public class BTService {
      * Indicate that the connection attempt failed and notify the UI Activity.
      */
     private void connectionFailed() {
-        mEventBus.post(new BTServiceEvent(BTServiceEvent.Event.CONNECTED
+        mEventBus.post(new BTServiceEvent(BTServiceEvent.Event.CONNECTION_FAIL
         ));
 
         // Start the service over to restart listening mode

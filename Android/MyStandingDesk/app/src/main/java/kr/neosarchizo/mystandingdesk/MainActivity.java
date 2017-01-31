@@ -43,7 +43,6 @@ public class MainActivity extends Activity {
     @InjectView(R.id.btn_down)
     ImageButton btnDown;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

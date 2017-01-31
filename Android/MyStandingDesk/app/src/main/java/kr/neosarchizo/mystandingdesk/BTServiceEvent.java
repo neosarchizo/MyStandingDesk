@@ -15,14 +15,7 @@ public class BTServiceEvent {
         STATE
     }
 
-    public enum State {
-        STATE_NONE,
-        STATE_CONNECTING,
-        STATE_CONNECTED
-    }
-
     private Event mEvent;
-    private State mState;
     private int mValue;
 
     public BTServiceEvent(Event event) {
@@ -36,10 +29,6 @@ public class BTServiceEvent {
 
     public Event getEvent() {
         return mEvent;
-    }
-
-    public State getState() {
-        return mState;
     }
 
     public int getValue() {
